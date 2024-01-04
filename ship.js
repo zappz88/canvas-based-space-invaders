@@ -66,7 +66,6 @@ export class Ship extends StrokeRect {
         if(event.code === this.keyboardControlMap.shootLaser){
             // console.log("Space");
             const mid = this.getCenterCoord();
-            console.log(mid);
             return new Laser(this.ctx, mid.x, this.y, 0, -2);
         }
     }

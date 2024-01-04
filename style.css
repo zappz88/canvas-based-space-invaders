@@ -43,20 +43,20 @@ button{
     margin: 10px auto;
 }
 
-#startGameContainer{
+/* #startGameContainer{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+} */
+
+#gameContainer{
     display: flex;
     flex-direction: column;
     justify-content: space-around;
 }
 
-#gameContainer{
-    display: none;
-    flex-direction: column;
-    justify-content: space-around;
-}
-
 #gameButtonContainer{
-    display: none;
+    display: flex;
     flex-direction: row;
     justify-content: space-around;
 }
