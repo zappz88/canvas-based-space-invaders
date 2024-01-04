@@ -1,2 +1,2 @@
-# canvas-based-space-invaders
-canvas-based-space-invaders
+# canvas-based-pong
+canvas-based-pong
