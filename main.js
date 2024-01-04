@@ -10,8 +10,9 @@ import { CanvasCollisionDetection } from "./canvas/environment/canvasCollisionDe
 import { CanvasCollisionDetection2D } from "./canvas/environment/canvasCollisionDetection2D.js";
 import { KeyCode } from "./controls/keyCode.js";
 import { KeyboardControlMap } from "./controls/keyboardControlMap.js";
-import { Paddle } from "./ship.js";
-import { Pong } from "./alien.js";
+import { Ship } from "./ship.js";
+import { Laser } from "./laser.js";
+import { Alien } from "./alien.js";
 
 function animate(){
     if(paused){
@@ -21,7 +22,15 @@ function animate(){
     requestAnimationFrame(animate);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    paddle.update();
+    ship.update();
+    if(lasers.length > 0){
+        lasers.forEach((laser, index) => {
+            laser.update();
+            if(CanvasCollisionDetection2D.verticalCollisionDetected(laser, ctx)){
+                lasers.splice(index, 1);
+            }
+        });
+    };
 }
 
 function pauseGame(){
@@ -36,6 +45,9 @@ function ShowWinnerScreen(winner){
 
 const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d");
+
+var lasers = [];
+
 const PLAYER_YVELOCITY = 3;
 var PONG_XVELOCITY = 2;
 var PONG_YVELOCITY = 2;
@@ -45,8 +57,10 @@ var PONG_INCREMENTING_YVELOCITY = 0.1;
 var WINNING_SCORE = 10;
 var paused = true;
 
-const paddleKeyBoardControlMap = new KeyboardControlMap(KeyCode.KeyW, KeyCode.KeyS, KeyCode.KeyA, KeyCode.KeyD, KeyCode.Space);
-var paddle = new Paddle(ctx, ((canvas.width / 2) - 50), (canvas.height - 10), 0, 0, 10, 50, "#000000", paddleKeyBoardControlMap);
+const shipKeyBoardControlMap = new KeyboardControlMap(KeyCode.KeyW, KeyCode.KeyS, KeyCode.KeyA, KeyCode.KeyD, KeyCode.Space);
+var ship = new Ship(ctx, ((canvas.width / 2) - 50), (canvas.height - 10), 0, 0, 10, 50, "#000000", shipKeyBoardControlMap);
+
+const laser = new Laser(ctx, ((ship.x + ship.width) / 2), ship.y, 0, -2);
 
 var playerOneScore = 0;
 const playerOneScoreBoard = document.querySelector("#playerOneScoreBoard");
@@ -124,13 +138,17 @@ function setGame(){
 
 document.addEventListener('keydown', (event) => {
         
-    paddle.move(event, PLAYER_YVELOCITY);
+    ship.move(event, PLAYER_YVELOCITY);
+    console.log(ship.shootLaser(event));
+    const laser = ship.shootLaser(event);
+    lasers.push(laser);
+    console.log(lasers);
 
 }, false);
 
 document.addEventListener('keyup', (event) => {
     
-    paddle.stop(event);
+    ship.stop(event);
 
 }, false);
 
