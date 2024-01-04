@@ -6,14 +6,14 @@ export class KeyboardControlMap {
     down;
     left;
     right;
-    shoot;
+    shootLaser;
 
-    constructor(up, down, left, right, shoot){
+    constructor(up, down, left, right, shootLaser){
         this.up = up;
         this.down = down;
         this.left = left;
         this.right = right;
-        this.shoot = shoot;
+        this.shootLaser = shootLaser;
     }
 
 }

@@ -23,14 +23,13 @@ function animate(){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     ship.update();
-    if(lasers.length > 0){
-        lasers.forEach((laser, index) => {
-            laser.update();
-            if(CanvasCollisionDetection2D.verticalCollisionDetected(laser, ctx)){
-                lasers.splice(index, 1);
-            }
-        });
-    };
+    laser.update();
+    alien.update();
+
+    if(CollisionDetection2D.topCollisionDetected(laser, alien)){
+        alien = null;
+        laser = null;
+    }
 }
 
 function pauseGame(){
@@ -46,21 +45,23 @@ function ShowWinnerScreen(winner){
 const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d");
 
-var lasers = [];
-
-const PLAYER_YVELOCITY = 3;
-var PONG_XVELOCITY = 2;
-var PONG_YVELOCITY = 2;
-var PONG_SIZE = 10;
-var PONG_INCREMENTING_XVELOCITY = 0.1;
-var PONG_INCREMENTING_YVELOCITY = 0.1;
+const SHIP_XVELOCITY = 2;
+var LAZER_YVELOCITY = 2;
+var ALIEN_XVELOCITY = 2;
+var ALIEN_YVELOCITY = 2;
+var ALIEN_INCREMENTING_XVELOCITY = 0.1;
+var ALIEN_INCREMENTING_YVELOCITY = 0.1;
 var WINNING_SCORE = 10;
 var paused = true;
 
+var lasers = [];
+
 const shipKeyBoardControlMap = new KeyboardControlMap(KeyCode.KeyW, KeyCode.KeyS, KeyCode.KeyA, KeyCode.KeyD, KeyCode.Space);
-var ship = new Ship(ctx, ((canvas.width / 2) - 50), (canvas.height - 10), 0, 0, 10, 50, "#000000", shipKeyBoardControlMap);
+var ship = new Ship(ctx, ((canvas.width / 2) - 25), (canvas.height - 10), 0, 0, 10, 50, "#000000", shipKeyBoardControlMap);
 
 const laser = new Laser(ctx, ((ship.x + ship.width) / 2), ship.y, 0, -2);
+
+var alien = new Alien(ctx, 0, 0, 1, 1, 10, 50, "#000000");
 
 var playerOneScore = 0;
 const playerOneScoreBoard = document.querySelector("#playerOneScoreBoard");
@@ -138,11 +139,9 @@ function setGame(){
 
 document.addEventListener('keydown', (event) => {
         
-    ship.move(event, PLAYER_YVELOCITY);
-    console.log(ship.shootLaser(event));
+    ship.move(event, SHIP_XVELOCITY);
     const laser = ship.shootLaser(event);
     lasers.push(laser);
-    console.log(lasers);
 
 }, false);
 

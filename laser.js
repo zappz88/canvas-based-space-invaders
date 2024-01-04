@@ -42,7 +42,7 @@ export class Laser extends FillRect {
             this.y += this.yVelocity;
         }
         else{
-            console.log("cleared screen");
+            // console.log("cleared screen");
         }
     }
 

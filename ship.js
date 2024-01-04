@@ -32,9 +32,6 @@ export class Ship extends StrokeRect {
         if(!CanvasCollisionDetection2D.horizontalCollisionDetected(this, this.ctx)){
             this.x += this.xVelocity;
         }
-        else{
-
-        }
     }
 
     //actions
@@ -66,9 +63,11 @@ export class Ship extends StrokeRect {
     }
 
     shootLaser(event){
-        if(event.code === this.keyboardControlMap.shoot){
+        if(event.code === this.keyboardControlMap.shootLaser){
             // console.log("Space");
-            return new Laser(this.ctx, ((300) / 2), this.y, 0, -2);
+            const mid = this.getCenterCoord();
+            console.log(mid);
+            return new Laser(this.ctx, mid.x, this.y, 0, -2);
         }
     }
 }
