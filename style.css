@@ -26,6 +26,7 @@ canvas{
     width: 800px;
     margin: auto;
     border: 5px solid black;
+    background-color: "#000000";
 }
 
 input{
@@ -43,20 +44,20 @@ button{
     margin: 10px auto;
 }
 
-/* #startGameContainer{
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-} */
-
-#gameContainer{
+#startGameContainer{
     display: flex;
     flex-direction: column;
     justify-content: space-around;
 }
 
+#gameContainer{
+    display: none;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
 #gameButtonContainer{
-    display: flex;
+    display: none;
     flex-direction: row;
     justify-content: space-around;
 }

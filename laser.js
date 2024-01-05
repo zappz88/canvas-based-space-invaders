@@ -10,7 +10,7 @@ export class Laser extends FillRect {
     incrementingXVelocity = 0.2;
     incrementingYVelocity = 0.1;
 
-    constructor(ctx, x, y, xVelocity = 0, yVelocity = -2, height = 5, width = 1, fillStyle = "#000000"){
+    constructor(ctx, x, y, xVelocity = 0, yVelocity = -2, height = 5, width = 0.5, fillStyle = "#000000"){
         super(ctx, x, y, height, width, fillStyle);
         this.xVelocity = xVelocity;
         this.yVelocity = yVelocity;

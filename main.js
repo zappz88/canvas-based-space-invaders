@@ -18,6 +18,7 @@ function animate(){
 
     requestAnimationFrame(animate);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     ship.update();
 
@@ -26,16 +27,33 @@ function animate(){
             aliens[i].update();
         }
     }
+    else{
+        generateAliens(ctx, ALIEN_COUNT);
+    }
 
     if(lasers.length > 0){
         for(let i = 0; i < lasers.length; i++){
             lasers[i].update();
-            for(let j = 0; j < aliens.length; j++){
-                if(lasers[i].isEnemyHit(aliens[j])){
-                    aliens[j].clear();
-                    lasers[i].clear();
-                    aliens.splice(j , 1);	
+        }
+    }
+
+    if(lasers.length > 0){
+        for(let i = 0; i < lasers.length; i++){
+            if(aliens.length > 0){
+                for(let j = 0; j < aliens.length; j++){
+                    if(lasers[i].isEnemyHit(aliens[j])){
+                        aliens[j].clear();
+                        lasers[i].clear();
+                        aliens.splice(j, 1);
+                        lasers.splice(i, 1);
+                        playerOneScore += 100;
+                        playerOneScoreBoard.innerText = playerOneScore;	
+                    }
                 }
+            }
+            if(CanvasCollisionDetection2D.topCollisionDetected(lasers[i], ctx)){
+                lasers[i].clear();
+                lasers.splice(i, 1);
             }
         }
     }
@@ -53,57 +71,62 @@ function ShowWinnerScreen(winner){
 
 const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d");
+ctx.fillStyle = "#000000";
 
+const SHIP_HEIGHT = 10;
+const SHIP_WIDTH = 20;
+const SHIP_XORIGIN = ((canvas.width / 2) - SHIP_WIDTH);
+const SHIP_YORIGIN = (canvas.height - SHIP_HEIGHT);
 const SHIP_XVELOCITY = 2;
-var LAZER_YVELOCITY = 2;
-var ALIEN_XVELOCITY = 2;
-var ALIEN_YVELOCITY = 2;
-var ALIEN_INCREMENTING_XVELOCITY = 0.1;
-var ALIEN_INCREMENTING_YVELOCITY = 0.1;
-var WINNING_SCORE = 10;
-var paused = true;
 
-const shipKeyBoardControlMap = new KeyboardControlMap(KeyCode.KeyW, KeyCode.KeyS, KeyCode.KeyA, KeyCode.KeyD, KeyCode.Space);
-var ship = new Ship(ctx, ((canvas.width / 2) - 25), (canvas.height - 10), 0, 0, 10, 50, "#000000", shipKeyBoardControlMap);
+const LAZER_HEIGHT = 5;
+const LAZER_WIDTH = 0.5;
+const LAZER_YVELOCITY = -2;
 
-const laser = new Laser(ctx, ((ship.x + ship.width) / 2), ship.y, 0, -2);
 
-var aliens = [new Alien(ctx, 30, 0, 1, 1, 10, 20, "#000000"), new Alien(ctx, 0, 0, 1, 1, 10, 20, "#000000")];
-var lasers = [laser];
+const ALIEN_HEIGHT = 10;
+const ALIEN_WIDTH = 15;
+const ALIEN_XVELOCITY = 1;
+const ALIEN_YVELOCITY = (ALIEN_HEIGHT + 3);
+const ALIEN_INCREMENTING_XVELOCITY = 0.1;
+const ALIEN_INCREMENTING_YVELOCITY = 0.1;
+const ALIEN_XPADDING = (ALIEN_WIDTH + 3);
+
+var ALIEN_COUNT = 15;
+var paused = false;
+
+const shipKeyBoardControlMap = new KeyboardControlMap(KeyCode.ArrowUp, KeyCode.ArrowDown, KeyCode.ArrowLeft, KeyCode.ArrowRight, KeyCode.Space);
+var ship = new Ship(ctx, SHIP_XORIGIN, SHIP_YORIGIN, 0, 0, SHIP_HEIGHT, SHIP_WIDTH, "#000000", shipKeyBoardControlMap);
+
+var aliens = [];
+var lasers = [];
 
 
 var playerOneScore = 0;
 const playerOneScoreBoard = document.querySelector("#playerOneScoreBoard");
 
-// const startGameContainer = document.querySelector("#startGameContainer");
-// const startButton = document.querySelector("#startButton");
-// const winningScoreInputField = document.querySelector("#winningScoreInputField");
-// const pongVelocityInputField = document.querySelector("#pongVelocityInputField");
-// const pongSizeInputField = document.querySelector("#pongSizeInputField");
-// const pongIncrementingXVelocityInputField = document.querySelector("#pongIncrementingXVelocityInputField");
-// const pongIncrementingYVelocityInputField = document.querySelector("#pongIncrementingYVelocityInputField");
-// const winningScoreField = document.querySelector("#winningScoreField");
+const startGameContainer = document.querySelector("#startGameContainer");
+const startButton = document.querySelector("#startButton");
+
 const gameContainer = document.querySelector("#gameContainer");
 const gameButtonContainer = document.querySelector("#gameButtonContainer");
-const resetButton = document.querySelector("#resetButton");
 const pauseButton = document.querySelector("#pauseButton");
 const winnerScreenContainer = document.querySelector("#winnerScreenContainer");
 
-// resetButton.addEventListener('click', (event) => {
-    
-//     setGame();
-    
-//     paddleOne.setX(0)
-//              .setY((canvas.height - 50));
-//     paddleTwo.setX((canvas.width - 10))
-//              .setY((canvas.height - 50));
-    
-//     pong.setX((canvas.width / 2))
-//         .setY((canvas.height / 2))
-//         .setXVelocity(PONG_XVELOCITY)
-//         .setYVelocity(PONG_YVELOCITY);
 
-// }, false);
+function setGame(){
+    generateAliens(ctx);
+}
+
+function generateAliens(ctx, alienCount){
+    let x = 0;
+    let y = 0;
+    for(let i = 0; i < alienCount; i++){
+        const alien = new Alien(ctx, x, y, ALIEN_XVELOCITY, ALIEN_YVELOCITY, ALIEN_HEIGHT, ALIEN_WIDTH);
+        aliens.push(alien);
+        x += ALIEN_XPADDING;
+    }
+}
 
 pauseButton.addEventListener('click', (event) => {
     
@@ -112,45 +135,32 @@ pauseButton.addEventListener('click', (event) => {
 
 }, false);
 
-// startButton.addEventListener('click', (event) => {
+startButton.addEventListener('click', (event) => {
     
-//     setGame();
+    setGame();
 
-//     startGameContainer.style.display = "none";
-//     gameContainer.style.display = "flex";
-//     gameButtonContainer.style.display = "flex";
+    startGameContainer.style.display = "none";
+    gameContainer.style.display = "flex";
+    gameButtonContainer.style.display = "flex";
 
-//     setTimeout(() => { 
-//         pauseGame(paused);
-//         animate();
-//     }, 1000)
+    setTimeout(() => { 
+        pauseGame(paused);
+        animate();
+    }, 1000)
 
-// }, false);
-
-function setGame(){
-    // WINNING_SCORE = parseInt(winningScoreInputField.value) || WINNING_SCORE;
-    // winningScoreField.innerText = WINNING_SCORE;
-    // playerOneScore = 0;
-    // playerOneScoreBoard.innerText = playerOneScore;
-    // playerTwoScore = 0;
-    // playerTwoScoreBoard.innerText = playerTwoScore;
-    // PONG_XVELOCITY = randomIntegerSign() * (parseInt(pongVelocityInputField.value)) || PONG_XVELOCITY;
-    // PONG_YVELOCITY = randomIntegerSign() * (parseInt(pongVelocityInputField.value)) || PONG_YVELOCITY;
-    // PONG_SIZE = parseInt(pongSizeInputField.value) || PONG_SIZE;
-    // PONG_INCREMENTING_XVELOCITY = parseInt(pongIncrementingXVelocityInputField.value) || PONG_INCREMENTING_XVELOCITY;
-    // PONG_INCREMENTING_YVELOCITY = parseInt(pongIncrementingYVelocityInputField.value) || PONG_INCREMENTING_YVELOCITY;
-    // pong.setSize(PONG_SIZE)
-    //     .setXVelocity(PONG_XVELOCITY)
-    //     .setYVelocity(PONG_YVELOCITY)
-    //     .setIncrementingXVelocity(PONG_INCREMENTING_XVELOCITY)
-    //     .setIncrementingYVelocity(PONG_INCREMENTING_YVELOCITY);
-}
+}, false);
 
 document.addEventListener('keydown', (event) => {
-        
+    
+    //ship
+    //ship movement
     ship.move(event, SHIP_XVELOCITY);
+
+    //ship shooting
     const laser = ship.shootLaser(event);
-    lasers.push(laser);
+    if(laser){
+        lasers.push(laser);
+    }
 
 }, false);
 

@@ -9,7 +9,7 @@ export class Alien extends FillRect {
     incrementingXVelocity = 0;
     incrementingYVelocity = 0;
 
-    constructor(ctx, x, y, xVelocity = 0, yVelocity = 0, height = 10, width = 20, fillStyle = "#000000"){
+    constructor(ctx, x, y, xVelocity = 0, yVelocity = 0, height = 10, width = 15, fillStyle = "#000000"){
         super(ctx, x, y, height, width, fillStyle);
         this.xVelocity = xVelocity;
         this.yVelocity = yVelocity;
@@ -46,17 +46,16 @@ export class Alien extends FillRect {
             this.x += this.xVelocity;
         }
         else{
-            this.xVelocity = (this.xVelocity * -1);
-            this.y += this.yVelocity;
+            // this.xVelocity = (this.xVelocity * -1);
+            // this.y += this.yVelocity;
 
-            // if(this.xVelocity < 0){
-            //     this.xVelocity = ((this.xVelocity - this.incrementingXVelocity) * -1);
-            //     this.y += this.yVelocity;
-            // }
-            // else{
-            //     this.xVelocity = ((this.xVelocity + this.incrementingXVelocity) * -1);
-            //     this.y += this.yVelocity;
-            // }
+            if(this.xVelocity < 0){
+                this.xVelocity = ((this.xVelocity - this.incrementingXVelocity) * -1);
+            }
+            else{
+                this.xVelocity = ((this.xVelocity + this.incrementingXVelocity) * -1);
+            }
+            this.y += this.yVelocity;
         }
     }
 

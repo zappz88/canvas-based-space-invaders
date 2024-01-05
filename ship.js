@@ -9,7 +9,7 @@ export class Ship extends StrokeRect {
     yVelocity;
     keyboardControlMap;
 
-    constructor(ctx, x, y, xVelocity = 0, yVelocity = 0, height = 50, width = 25, strokeStyle = "#000000", keyboardControlMap){
+    constructor(ctx, x, y, xVelocity = 0, yVelocity = 0, height = 10, width = 20, strokeStyle = "#000000", keyboardControlMap){
         super(ctx, x, y, height, width, strokeStyle);
         this.xVelocity = xVelocity;
         this.yVelocity = yVelocity;
@@ -63,10 +63,12 @@ export class Ship extends StrokeRect {
     }
 
     shootLaser(event){
-        if(event.code === this.keyboardControlMap.shootLaser){
-            // console.log("Space");
-            const mid = this.getCenterCoord();
-            return new Laser(this.ctx, mid.x, this.y, 0, -2);
+        switch(event.code){
+            case this.keyboardControlMap.shootLaser:
+                // console.log("Space");
+                const mid = this.getCenterCoord();
+                return new Laser(this.ctx, mid.x, (mid.y - this.height), 0, -2);
+                break;
         }
     }
 }
