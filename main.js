@@ -46,7 +46,7 @@ function animate(){
     else{
         console.log("generating new invaders");
         INVADER_XVELOCITY += 0.25;
-        invaders = new Invaders(ctx, 0, 0, (generateInvaders(ctx, 5, 5)), INVADER_YVELOCITY);
+        invaders = new Invaders(ctx, 0, 0, (generateInvaders(ctx, 5, 5)), 0, INVADER_YVELOCITY);
     }
 }
 
@@ -91,7 +91,7 @@ var paused = true;
 const spaceShipKeyBoardControlMap = new KeyboardControlMap(KeyCode.ArrowUp, KeyCode.ArrowDown, KeyCode.ArrowLeft, KeyCode.ArrowRight, KeyCode.Space);
 var spaceShip = new SpaceShip(ctx, SPACESHIP_XORIGIN, SPACESHIP_YORIGIN, 0, 0, SPACESHIP_HEIGHT, SPACESHIP_WIDTH, "#000000", spaceShipKeyBoardControlMap);
 
-var invaders = new Invaders(ctx, 0, 0, (generateInvaders(ctx, 5, 5)), INVADER_YVELOCITY);
+var invaders = new Invaders(ctx, 0, 0, (generateInvaders(ctx, 5, 5)), 0, INVADER_YVELOCITY);
 
 function generateInvaders(ctx, x, y){
     let invaders = [];
