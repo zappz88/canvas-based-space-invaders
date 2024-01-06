@@ -1,7 +1,7 @@
 import { FillRect } from "./canvas/model/fillRect.js";
 import { CanvasCollisionDetection2D } from "./canvas/environment/canvasCollisionDetection2D.js";
 
-export class Alien extends FillRect {
+export class Invader extends FillRect {
 
     //property, ctor
     xVelocity;
@@ -45,22 +45,6 @@ export class Alien extends FillRect {
         if(!CanvasCollisionDetection2D.horizontalCollisionDetected(this, this.ctx)){
             this.x += this.xVelocity;
         }
-        else{
-            // this.xVelocity = (this.xVelocity * -1);
-            // this.y += this.yVelocity;
-
-            if(this.xVelocity < 0){
-                this.xVelocity = ((this.xVelocity - this.incrementingXVelocity) * -1);
-            }
-            else{
-                this.xVelocity = ((this.xVelocity + this.incrementingXVelocity) * -1);
-            }
-            this.y += this.yVelocity;
-        }
-    }
-
-    drawExplosion(){
-        
     }
 
     //actions
