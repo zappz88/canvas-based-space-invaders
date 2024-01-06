@@ -68,8 +68,7 @@ export class Invaders {
                 const curr = this.invaderMatrix2D[i][j];
                 curr.update();
                 if(
-                    CanvasCollisionDetection2D.rightCollisionDetected(curr, this.ctx) ||
-                    CanvasCollisionDetection2D.leftCollisionDetected(curr, this.ctx)
+                    CanvasCollisionDetection2D.horizontalCollisionDetected(curr, this.ctx)
                 ){
                     this.updateDescent();
                 }

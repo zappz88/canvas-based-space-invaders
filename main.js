@@ -48,11 +48,12 @@ function animate(){
             const currentInvaderRow = invaders.invaderMatrix2D[i];
             if(currentInvaderRow.length === 0){
                 invaders.invaderMatrix2D.splice(i, 1);
+                continue;
             }
             for(let j = 0; j < invaders.invaderMatrix2D[i].length; j++){
                 const currentInvader = invaders.invaderMatrix2D[i][j];
                 if(spaceShip.laserHit(currentInvader)){
-                    console.log("hit");
+                    console.log("hitInvader");
                     currentInvader.clear();
                     currentInvaderRow.splice(j, 1);
                     playerOneScore += 100;
@@ -66,7 +67,7 @@ function animate(){
         for(let i = 0; i < ufoInvaders.length; i++){
             const currentUfoInvader = ufoInvaders[i];
             if(spaceShip.laserHit(currentUfoInvader)){
-                console.log("hit");
+                console.log("hitUfoInvader");
                 currentUfoInvader.clear();
                 ufoInvaders.splice(i, 1);
                 playerOneScore += 500;
@@ -184,6 +185,8 @@ document.addEventListener('keydown', (event) => {
 
 document.addEventListener('keyup', (event) => {
     
+    //ship
+    //ship movement
     spaceShip.stop(event);
 
 }, false);

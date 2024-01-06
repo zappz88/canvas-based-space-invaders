@@ -17,7 +17,24 @@ export class UFOInvader extends FillRect {
         this.yVelocity = yVelocity;
         this.incrementingXVelocity = 0;
         this.incrementingYVelocity = 0;
-        this.fillStyles = ["#000000", "#808080", "#FFFFFF"];
+        this.fillStyles = [
+                "#000000", 
+                "#111111", 
+                "#222222", 
+                "#333333", 
+                "#444444",
+                "#555555", 
+                "#666666", 
+                "#777777", 
+                "#888888", 
+                "#999999",
+                "#AAAAAA", 
+                "#BBBBBB", 
+                "#CCCCCC", 
+                "#DDDDDD", 
+                "#EEEEEE",
+                "#FFFFFF"
+        ];
         this.fillStylesIndexMonitor = 0;
     }
 
@@ -53,7 +70,7 @@ export class UFOInvader extends FillRect {
 
         this.x += this.xVelocity;
 
-        if(this.fillStylesIndexMonitor > 2){
+        if(this.fillStylesIndexMonitor >= this.fillStyles.length){
             this.fillStylesIndexMonitor = 0;   
         }
         this.fillStylesIndexMonitor++;
