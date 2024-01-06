@@ -10,52 +10,43 @@ import { CanvasCollisionDetection } from "./canvas/environment/canvasCollisionDe
 import { CanvasCollisionDetection2D } from "./canvas/environment/canvasCollisionDetection2D.js";
 import { KeyCode } from "./controls/keyCode.js";
 import { KeyboardControlMap } from "./controls/keyboardControlMap.js";
-import { Ship } from "./ship.js";
+import { SpaceShip } from "./spaceShip.js";
 import { Laser } from "./laser.js";
-import { Alien } from "./alien.js";
+import { Invader } from "./invader.js";
+import { Invaders } from "./invaders.js";
 
 function animate(){
+    if(paused){
+        return;
+    }
 
     requestAnimationFrame(animate);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     // ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    ship.update();
+    spaceShip.update();
 
-    if(aliens.length > 0){
-        for(let i = 0; i < aliens.length; i++){
-            aliens[i].update();
+    if(invaders.invaderMatrix2D.length > 0){
+        invaders.update();
+        for(let i = 0; i < invaders.invaderMatrix2D.length; i++){
+            if(invaders.invaderMatrix2D[i].length === 0){
+                invaders.invaderMatrix2D.splice(i, 1);
+            }
+            for(let j = 0; j < invaders.invaderMatrix2D[i].length; j++){
+                if(spaceShip.laserHit(invaders.invaderMatrix2D[i][j])){
+                    console.log("hit");
+                    invaders.invaderMatrix2D[i][j].clear();
+                    invaders.invaderMatrix2D[i].splice(j, 1);
+                    playerOneScore += 100;
+                    playerOneScoreBoard.innerText = playerOneScore;	
+                }
+            }
         }
     }
     else{
-        generateAliens(ctx, ALIEN_COUNT);
-    }
-
-    if(lasers.length > 0){
-        for(let i = 0; i < lasers.length; i++){
-            lasers[i].update();
-        }
-    }
-
-    if(lasers.length > 0){
-        for(let i = 0; i < lasers.length; i++){
-            if(aliens.length > 0){
-                for(let j = 0; j < aliens.length; j++){
-                    if(lasers[i].isEnemyHit(aliens[j])){
-                        aliens[j].clear();
-                        lasers[i].clear();
-                        aliens.splice(j, 1);
-                        lasers.splice(i, 1);
-                        playerOneScore += 100;
-                        playerOneScoreBoard.innerText = playerOneScore;	
-                    }
-                }
-            }
-            if(CanvasCollisionDetection2D.topCollisionDetected(lasers[i], ctx)){
-                lasers[i].clear();
-                lasers.splice(i, 1);
-            }
-        }
+        console.log("generating new invaders");
+        INVADER_XVELOCITY += 0.25;
+        invaders = new Invaders(ctx, 0, 0, (generateInvaders(ctx, 5, 5)), INVADER_YVELOCITY);
     }
 }
 
@@ -73,34 +64,56 @@ const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d");
 ctx.fillStyle = "#000000";
 
-const SHIP_HEIGHT = 10;
-const SHIP_WIDTH = 20;
-const SHIP_XORIGIN = ((canvas.width / 2) - SHIP_WIDTH);
-const SHIP_YORIGIN = (canvas.height - SHIP_HEIGHT);
-const SHIP_XVELOCITY = 2;
+const SPACESHIP_HEIGHT = 6;
+const SPACESHIP_WIDTH = 12;
+const SPACESHIP_XORIGIN = ((canvas.width / 2) - SPACESHIP_WIDTH);
+const SPACESHIP_YORIGIN = (canvas.height - SPACESHIP_HEIGHT);
+const SPACESHIP_XVELOCITY = 2;
 
 const LAZER_HEIGHT = 5;
 const LAZER_WIDTH = 0.5;
 const LAZER_YVELOCITY = -2;
 
 
-const ALIEN_HEIGHT = 10;
-const ALIEN_WIDTH = 15;
-const ALIEN_XVELOCITY = 1;
-const ALIEN_YVELOCITY = (ALIEN_HEIGHT + 3);
-const ALIEN_INCREMENTING_XVELOCITY = 0.1;
-const ALIEN_INCREMENTING_YVELOCITY = 0.1;
-const ALIEN_XPADDING = (ALIEN_WIDTH + 3);
+const INVADER_HEIGHT = 8;
+const INVADER_WIDTH = 8;
+const INVADER_XPADDING = INVADER_WIDTH / 2;
+const INVADER_YPADDING = INVADER_HEIGHT / 2;
+var INVADER_XVELOCITY = 0.25;
+const INVADER_YVELOCITY = (INVADER_HEIGHT + INVADER_YPADDING);
+const INVADER_INCREMENTING_XVELOCITY = 0.1;
+const INVADER_INCREMENTING_YVELOCITY = 0.1;
 
-var ALIEN_COUNT = 15;
-var paused = false;
 
-const shipKeyBoardControlMap = new KeyboardControlMap(KeyCode.ArrowUp, KeyCode.ArrowDown, KeyCode.ArrowLeft, KeyCode.ArrowRight, KeyCode.Space);
-var ship = new Ship(ctx, SHIP_XORIGIN, SHIP_YORIGIN, 0, 0, SHIP_HEIGHT, SHIP_WIDTH, "#000000", shipKeyBoardControlMap);
+var INVADER_COUNT = 15;
+var paused = true;
 
-var aliens = [];
-var lasers = [];
+const spaceShipKeyBoardControlMap = new KeyboardControlMap(KeyCode.ArrowUp, KeyCode.ArrowDown, KeyCode.ArrowLeft, KeyCode.ArrowRight, KeyCode.Space);
+var spaceShip = new SpaceShip(ctx, SPACESHIP_XORIGIN, SPACESHIP_YORIGIN, 0, 0, SPACESHIP_HEIGHT, SPACESHIP_WIDTH, "#000000", spaceShipKeyBoardControlMap);
 
+var invaders = new Invaders(ctx, 0, 0, (generateInvaders(ctx, 5, 5)), INVADER_YVELOCITY);
+
+function generateInvaders(ctx, x, y){
+    let invaders = [];
+    let newX = x;
+    let newY = y;
+    for(let i = 0; i < 5; i++){
+        invaders.push(generateInvaderRow(ctx, newX, newY, 15));
+        newX = 5;
+        newY += INVADER_HEIGHT + INVADER_YPADDING;
+    }
+    return invaders;
+}
+
+function generateInvaderRow(ctx, x, y, invaderCount){
+    let invaderRow = [];
+    for(let i = 0; i < invaderCount; i++){
+        const invader = new Invader(ctx, x, y, INVADER_XVELOCITY, 0, INVADER_HEIGHT, INVADER_WIDTH);
+        invaderRow.push(invader);
+        x += INVADER_WIDTH + INVADER_XPADDING;
+    }
+    return invaderRow;
+}
 
 var playerOneScore = 0;
 const playerOneScoreBoard = document.querySelector("#playerOneScoreBoard");
@@ -113,21 +126,6 @@ const gameButtonContainer = document.querySelector("#gameButtonContainer");
 const pauseButton = document.querySelector("#pauseButton");
 const winnerScreenContainer = document.querySelector("#winnerScreenContainer");
 
-
-function setGame(){
-    generateAliens(ctx);
-}
-
-function generateAliens(ctx, alienCount){
-    let x = 0;
-    let y = 0;
-    for(let i = 0; i < alienCount; i++){
-        const alien = new Alien(ctx, x, y, ALIEN_XVELOCITY, ALIEN_YVELOCITY, ALIEN_HEIGHT, ALIEN_WIDTH);
-        aliens.push(alien);
-        x += ALIEN_XPADDING;
-    }
-}
-
 pauseButton.addEventListener('click', (event) => {
     
     pauseGame(paused);
@@ -136,8 +134,6 @@ pauseButton.addEventListener('click', (event) => {
 }, false);
 
 startButton.addEventListener('click', (event) => {
-    
-    setGame();
 
     startGameContainer.style.display = "none";
     gameContainer.style.display = "flex";
@@ -154,18 +150,15 @@ document.addEventListener('keydown', (event) => {
     
     //ship
     //ship movement
-    ship.move(event, SHIP_XVELOCITY);
+    spaceShip.move(event, SPACESHIP_XVELOCITY);
 
     //ship shooting
-    const laser = ship.shootLaser(event);
-    if(laser){
-        lasers.push(laser);
-    }
+    spaceShip.shootLaser(event);
 
 }, false);
 
 document.addEventListener('keyup', (event) => {
     
-    ship.stop(event);
+    spaceShip.stop(event);
 
 }, false);
