@@ -14,9 +14,10 @@ import { SpaceShip } from "./spaceShip.js";
 import { Laser } from "./laser.js";
 import { Invader } from "./invader.js";
 import { Invaders } from "./invaders.js";
+import { UFOInvader } from "./ufoInvader.js";
 
 function animate(){
-    if(paused){
+    if(IS_PAUSED){
         return;
     }
 
@@ -28,6 +29,21 @@ function animate(){
 
     if(invaders.invaderMatrix2D.length > 0){
         invaders.update();
+    }
+    else{
+        console.log("generating new invaders");
+        INVADER_XVELOCITY += 0.25;
+        invaders = new Invaders(ctx, 0, 0, (generateInvaders(ctx, 5, 15)), 0, INVADER_YVELOCITY);
+    }
+
+    if(ufoInvaders.length > 0){
+        for(let i = 0; i < ufoInvaders.length; i++){
+            const currentUfoInvader = ufoInvaders[i];
+            currentUfoInvader.update();
+        }
+    }
+
+    if(invaders.invaderMatrix2D.length > 0){
         for(let i = 0; i < invaders.invaderMatrix2D.length; i++){
             const currentInvaderRow = invaders.invaderMatrix2D[i];
             if(currentInvaderRow.length === 0){
@@ -45,15 +61,23 @@ function animate(){
             }
         }
     }
-    else{
-        console.log("generating new invaders");
-        INVADER_XVELOCITY += 0.25;
-        invaders = new Invaders(ctx, 0, 0, (generateInvaders(ctx, 5, 5)), 0, INVADER_YVELOCITY);
+
+    if(ufoInvaders.length > 0){
+        for(let i = 0; i < ufoInvaders.length; i++){
+            const currentUfoInvader = ufoInvaders[i];
+            if(spaceShip.laserHit(currentUfoInvader)){
+                console.log("hit");
+                currentUfoInvader.clear();
+                ufoInvaders.splice(i, 1);
+                playerOneScore += 500;
+                playerOneScoreBoard.innerText = playerOneScore;	
+            }
+        }
     }
 }
 
 function pauseGame(){
-    paused = !paused;
+    IS_PAUSED = !IS_PAUSED;
 }
 
 function ShowWinnerScreen(winner){
@@ -65,6 +89,7 @@ function ShowWinnerScreen(winner){
 const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d");
 ctx.fillStyle = "#000000";
+var IS_PAUSED = true;
 
 const SPACESHIP_HEIGHT = 6;
 const SPACESHIP_WIDTH = 12;
@@ -76,6 +101,8 @@ const LAZER_HEIGHT = 5;
 const LAZER_WIDTH = 0.5;
 const LAZER_YVELOCITY = -2;
 
+const spaceShipKeyBoardControlMap = new KeyboardControlMap(KeyCode.ArrowUp, KeyCode.ArrowDown, KeyCode.ArrowLeft, KeyCode.ArrowRight, KeyCode.Space);
+var spaceShip = new SpaceShip(ctx, SPACESHIP_XORIGIN, SPACESHIP_YORIGIN, 0, 0, SPACESHIP_HEIGHT, SPACESHIP_WIDTH, "#000000", spaceShipKeyBoardControlMap);
 
 const INVADER_HEIGHT = 8;
 const INVADER_WIDTH = 8;
@@ -85,15 +112,9 @@ var INVADER_XVELOCITY = 0.25;
 const INVADER_YVELOCITY = (INVADER_HEIGHT + INVADER_YPADDING);
 const INVADER_INCREMENTING_XVELOCITY = 0.1;
 const INVADER_INCREMENTING_YVELOCITY = 0.1;
-
-
 var INVADER_COUNT = 15;
-var paused = true;
 
-const spaceShipKeyBoardControlMap = new KeyboardControlMap(KeyCode.ArrowUp, KeyCode.ArrowDown, KeyCode.ArrowLeft, KeyCode.ArrowRight, KeyCode.Space);
-var spaceShip = new SpaceShip(ctx, SPACESHIP_XORIGIN, SPACESHIP_YORIGIN, 0, 0, SPACESHIP_HEIGHT, SPACESHIP_WIDTH, "#000000", spaceShipKeyBoardControlMap);
-
-var invaders = new Invaders(ctx, 0, 0, (generateInvaders(ctx, 5, 5)), 0, INVADER_YVELOCITY);
+var invaders = new Invaders(ctx, 0, 0, (generateInvaders(ctx, 5, 15)), 0, INVADER_YVELOCITY);
 
 function generateInvaders(ctx, x, y){
     let invaders = [];
@@ -117,6 +138,8 @@ function generateInvaderRow(ctx, x, y, invaderCount){
     return invaderRow;
 }
 
+var ufoInvaders = [new UFOInvader(ctx, 0, 0, 0.5, 0)];
+
 var playerOneScore = 0;
 const playerOneScoreBoard = document.querySelector("#playerOneScoreBoard");
 
@@ -130,7 +153,7 @@ const winnerScreenContainer = document.querySelector("#winnerScreenContainer");
 
 pauseButton.addEventListener('click', (event) => {
     
-    pauseGame(paused);
+    pauseGame(IS_PAUSED);
     animate();
 
 }, false);
@@ -142,7 +165,7 @@ startButton.addEventListener('click', (event) => {
     gameButtonContainer.style.display = "flex";
 
     setTimeout(() => { 
-        pauseGame(paused);
+        pauseGame(IS_PAUSED);
         animate();
     }, 1000)
 
