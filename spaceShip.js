@@ -1,19 +1,22 @@
 import { CanvasCollisionDetection2D } from "./canvas/environment/canvasCollisionDetection2D.js";
 import { Laser } from "./laser.js";
 import { StrokeRect } from "./canvas/model/strokeRect.js";
+import { CollisionDetection2D } from "./canvas/model/collisionDetection/collisionDetection2D.js";
 
-export class Ship extends StrokeRect {
+export class SpaceShip extends StrokeRect {
 
     //property, ctor
     xVelocity;
     yVelocity;
     keyboardControlMap;
+    lasers;
 
     constructor(ctx, x, y, xVelocity = 0, yVelocity = 0, height = 10, width = 20, strokeStyle = "#000000", keyboardControlMap){
         super(ctx, x, y, height, width, strokeStyle);
         this.xVelocity = xVelocity;
         this.yVelocity = yVelocity;
         this.keyboardControlMap = keyboardControlMap;
+        this.lasers = [];
     }
 
     setXVelocity(val){
@@ -31,6 +34,13 @@ export class Ship extends StrokeRect {
 
         if(!CanvasCollisionDetection2D.horizontalCollisionDetected(this, this.ctx)){
             this.x += this.xVelocity;
+        }
+
+        for(let i = 0; i < this.lasers.length; i++){
+            this.lasers[i].update();
+            if(CanvasCollisionDetection2D.topCollisionDetected(this.lasers[i], this.ctx)){
+                this.lasers.splice(i, 1);
+            }
         }
     }
 
@@ -67,8 +77,19 @@ export class Ship extends StrokeRect {
             case this.keyboardControlMap.shootLaser:
                 // console.log("Space");
                 const mid = this.getCenterCoord();
-                return new Laser(this.ctx, mid.x, (mid.y - this.height), 0, -2);
+                this.lasers.push(new Laser(this.ctx, mid.x, (mid.y - this.height), 0, -2));
                 break;
         }
+    }
+
+    laserHit(obj){
+        for(let i = 0; i < this.lasers.length; i++){
+            if(this.lasers[i].laserHit(obj)){
+                this.lasers[i].clear();
+                this.lasers.splice(i, 1);
+                return true;
+            }
+        }
+        return false;
     }
 }
