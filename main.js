@@ -29,14 +29,16 @@ function animate(){
     if(invaders.invaderMatrix2D.length > 0){
         invaders.update();
         for(let i = 0; i < invaders.invaderMatrix2D.length; i++){
-            if(invaders.invaderMatrix2D[i].length === 0){
+            const currentInvaderRow = invaders.invaderMatrix2D[i];
+            if(currentInvaderRow.length === 0){
                 invaders.invaderMatrix2D.splice(i, 1);
             }
             for(let j = 0; j < invaders.invaderMatrix2D[i].length; j++){
-                if(spaceShip.laserHit(invaders.invaderMatrix2D[i][j])){
+                const currentInvader = invaders.invaderMatrix2D[i][j];
+                if(spaceShip.laserHit(currentInvader)){
                     console.log("hit");
-                    invaders.invaderMatrix2D[i][j].clear();
-                    invaders.invaderMatrix2D[i].splice(j, 1);
+                    currentInvader.clear();
+                    currentInvaderRow.splice(j, 1);
                     playerOneScore += 100;
                     playerOneScoreBoard.innerText = playerOneScore;	
                 }
