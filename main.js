@@ -43,6 +43,14 @@ function animate(){
         }
     }
 
+    nextUfoInvaderGeneratorCount++;
+
+    if(nextUfoInvaderGeneratorCount === nextUfoInvaderGenerator){
+        ufoInvaders.push(new UFOInvader(ctx, 0, 0, 0.5, 0));
+        nextUfoInvaderGenerator = randomNumberAggregateGenerator(2, 1000);
+        nextUfoInvaderGeneratorCount = 0;
+    }
+
     if(invaders.invaderMatrix2D.length > 0){
         for(let i = 0; i < invaders.invaderMatrix2D.length; i++){
             const currentInvaderRow = invaders.invaderMatrix2D[i];
@@ -59,6 +67,13 @@ function animate(){
                     playerOneScore += 100;
                     playerOneScoreBoard.innerText = playerOneScore;	
                 }
+
+                if(
+                    CanvasCollisionDetection2D.bottomCollisionDetected(currentInvader, ctx) ||
+                    CollisionDetection2D.collisionDetected(currentInvader, spaceShip)
+                ){
+                    showHighScoreScreen(playerOneScore);
+                }
             }
         }
     }
@@ -73,6 +88,10 @@ function animate(){
                 playerOneScore += 500;
                 playerOneScoreBoard.innerText = playerOneScore;	
             }
+
+            if(CanvasCollisionDetection2D.horizontalCollisionDetected(currentUfoInvader, ctx)){
+                ufoInvaders.splice(i, 1);
+            }
         }
     }
 }
@@ -81,9 +100,9 @@ function pauseGame(){
     IS_PAUSED = !IS_PAUSED;
 }
 
-function ShowWinnerScreen(winner){
+function showHighScoreScreen(highScore){
     gameContainer.style.display = "none";
-    winnerScreenContainer.innerHTML = `<h1>The winner is: ${winner}!!!</h1>`;
+    winnerScreenContainer.innerHTML = `<h1>Your highest score was: ${highScore}!!!</h1>`;
     winnerScreenContainer.style.display = "flex";
 }
 
@@ -139,7 +158,17 @@ function generateInvaderRow(ctx, x, y, invaderCount){
     return invaderRow;
 }
 
-var ufoInvaders = [new UFOInvader(ctx, 0, 0, 0.5, 0)];
+function randomNumberAggregateGenerator(iterations, range){
+    let res = 0;
+    for(let i = 0; i < iterations; i++){
+        res += Math.round(Math.random() * range);
+    }    
+    return res;
+}
+
+var nextUfoInvaderGenerator = randomNumberAggregateGenerator(2, 1000);
+var nextUfoInvaderGeneratorCount = 0;
+var ufoInvaders = [];
 
 var playerOneScore = 0;
 const playerOneScoreBoard = document.querySelector("#playerOneScoreBoard");
