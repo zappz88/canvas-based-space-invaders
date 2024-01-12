@@ -73,6 +73,7 @@ function animate(){
                     CollisionDetection2D.collisionDetected(currentInvader, spaceShip)
                 ){
                     showHighScoreScreen(playerOneScore);
+                    pauseGame(IS_PAUSED);
                 }
             }
         }

@@ -74,7 +74,7 @@ export class SpaceShip extends StrokeRect {
 
     shootLaser(event){
         switch(event.code){
-            case this.keyboardControlMap.shootLaser:
+            case this.keyboardControlMap.action:
                 // console.log("Space");
                 if(this.lasers.length < 3){
                     const mid = this.getCenterCoord();
