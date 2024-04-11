@@ -53,7 +53,7 @@ export class Laser extends FillRect {
         this.setYVelocity(0);
     }
 
-    laserHit(alien){
-        return CollisionDetection2D.getTopCollisionDetected(this, alien);
+    laserHit(obj){
+        return CollisionDetection2D.collisionDetected(this, obj);
     }
 }
